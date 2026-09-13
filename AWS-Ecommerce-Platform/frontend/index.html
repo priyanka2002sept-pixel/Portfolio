@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AWS Serverless Shop</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- ── NAVBAR ─────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-left">
+      <div class="nav-logo">
+        <div class="logo-icon">&#x2601;</div>
+        <span class="logo-text">NimbusShop</span>
+        <span class="logo-badge">AWS</span>
+      </div>
+    </div>
+    <div class="nav-center">
+      <div class="search-bar">
+        <span class="search-icon">&#x1F50D;</span>
+        <input id="search-input" type="text" placeholder="Search products..." oninput="filterSearch(this.value)"/>
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">&#x2715;</button>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">&#x1F31A;</button>
+      <div id="nav-user-area" class="nav-user-area">
+        <button class="btn-nav btn-login" id="btn-login" onclick="showLogin()">Sign In</button>
+      </div>
+      <button class="cart-btn" onclick="openCart()">
+        <span class="cart-icon-svg">&#x1F6D2;</span>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-orb orb1"></div>
+      <div class="hero-orb orb2"></div>
+      <div class="hero-orb orb3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">&#x2728; Powered by AWS Serverless</div>
+      <h1 class="hero-title">
+        Shop Smarter.<br/>
+        <span class="gradient-text">Scale Infinitely.</span>
+      </h1>
+      <p class="hero-subtitle">A fully serverless e-commerce platform — Lambda, API Gateway, DynamoDB, Cognito &amp; CloudFront working together at zero idle cost.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="scrollToProducts()">Browse Products &#x2193;</button>
+        <button class="btn-ghost" onclick="showArchModal()">View Architecture &#x1F5FA;</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" data-target="11">0</span><span class="stat-label">AWS Services</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num" data-target="0">0</span><span class="stat-label">Monthly Cost (£)</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num" data-target="1000000">0</span><span class="stat-label">Free Requests/mo</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="arch-diagram">
+        <div class="arch-node node-user">&#x1F464; User</div>
+        <div class="arch-arrow">&#x2193;</div>
+        <div class="arch-node node-cf">&#x1F30D; CloudFront</div>
+        <div class="arch-arrow">&#x2193;</div>
+        <div class="arch-node node-api">&#x1F50C; API Gateway</div>
+        <div class="arch-arrow">&#x2193;</div>
+        <div class="arch-node node-lambda">&#x26A1; Lambda</div>
+        <div class="arch-arrow">&#x2193;</div>
+        <div class="arch-node node-db">&#x1F5C4; DynamoDB</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AWS SERVICES TICKER ────────────────────── -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>&#x26A1; Lambda</span><span>&#x2022;</span>
+      <span>&#x1F50C; API Gateway</span><span>&#x2022;</span>
+      <span>&#x1F5C4; DynamoDB</span><span>&#x2022;</span>
+      <span>&#x1F510; Cognito</span><span>&#x2022;</span>
+      <span>&#x1F30D; CloudFront</span><span>&#x2022;</span>
+      <span>&#x1F4EC; SQS</span><span>&#x2022;</span>
+      <span>&#x1F4E3; SNS</span><span>&#x2022;</span>
+      <span>&#x1F4CA; CloudWatch</span><span>&#x2022;</span>
+      <span>&#x1F5C3; S3</span><span>&#x2022;</span>
+      <span>&#x1F512; IAM</span><span>&#x2022;</span>
+      <span>&#x1F4CB; CloudFormation</span><span>&#x2022;</span>
+      <!-- repeat for seamless loop -->
+      <span>&#x26A1; Lambda</span><span>&#x2022;</span>
+      <span>&#x1F50C; API Gateway</span><span>&#x2022;</span>
+      <span>&#x1F5C4; DynamoDB</span><span>&#x2022;</span>
+      <span>&#x1F510; Cognito</span><span>&#x2022;</span>
+      <span>&#x1F30D; CloudFront</span><span>&#x2022;</span>
+      <span>&#x1F4EC; SQS</span><span>&#x2022;</span>
+    </div>
+  </div>
+
+  <!-- ── FILTERS + PRODUCTS ─────────────────────── -->
+  <section class="shop-section" id="shop">
+    <div class="shop-header">
+      <h2 class="section-title">Featured Products</h2>
+      <div class="filter-pills">
+        <button class="pill active" data-cat="all" onclick="setCategory('all', this)">All</button>
+        <button class="pill" data-cat="Electronics" onclick="setCategory('Electronics', this)">&#x1F4BB; Electronics</button>
+        <button class="pill" data-cat="Clothing" onclick="setCategory('Clothing', this)">&#x1F455; Clothing</button>
+        <button class="pill" data-cat="Books" onclick="setCategory('Books', this)">&#x1F4DA; Books</button>
+        <button class="pill" data-cat="Home" onclick="setCategory('Home', this)">&#x1F3E0; Home</button>
+      </div>
+      <div class="sort-bar">
+        <select id="sort-select" onchange="sortProducts(this.value)">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name">Name A-Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="products-grid" class="products-grid"></div>
+    <div id="empty-state" class="empty-state" style="display:none">
+      <div class="empty-icon">&#x1F50D;</div>
+      <h3>No products found</h3>
+      <p>Try a different search or category</p>
+    </div>
+  </section>
+
+  <!-- ── CART DRAWER ────────────────────────────── -->
+  <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="cart-close" onclick="closeCart()">&#x2715;</button>
+    </div>
+    <div class="cart-body" id="cart-items"></div>
+    <div class="cart-footer" id="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">&#xA3;0.00</span>
+      </div>
+      <div class="cart-total-row cart-total-big">
+        <span>Total</span>
+        <span id="cart-total">&#xA3;0.00</span>
+      </div>
+      <button class="btn-checkout" onclick="placeOrder()">Checkout &#x2192;</button>
+      <button class="btn-continue" onclick="closeCart()">Continue Shopping</button>
+    </div>
+  </aside>
+
+  <!-- ── LOGIN MODAL ────────────────────────────── -->
+  <div class="modal-overlay" id="login-overlay" onclick="closeLoginModal()"></div>
+  <div class="modal-box" id="login-modal">
+    <button class="modal-close" onclick="closeLoginModal()">&#x2715;</button>
+    <div class="modal-tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+    <div id="pane-login" class="tab-pane active">
+      <h2>Welcome back</h2>
+      <p class="modal-sub">Sign in to your account</p>
+      <label>Email</label>
+      <input id="login-email" type="email" placeholder="you@example.com"/>
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input id="login-password" type="password" placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"/>
+        <button class="pw-toggle" onclick="togglePw('login-password', this)">&#x1F441;</button>
+      </div>
+      <button class="btn-primary full-width" onclick="login()">Sign In</button>
+    </div>
+    <div id="pane-register" class="tab-pane">
+      <h2>Create account</h2>
+      <p class="modal-sub">Join NimbusShop today</p>
+      <div class="name-row">
+        <div><label>First Name</label><input id="reg-firstname" type="text" placeholder="Jane"/></div>
+        <div><label>Last Name</label><input id="reg-lastname" type="text" placeholder="Doe"/></div>
+      </div>
+      <label>Email</label>
+      <input id="reg-email" type="email" placeholder="you@example.com"/>
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input id="reg-password" type="password" placeholder="Min 8 characters"/>
+        <button class="pw-toggle" onclick="togglePw('reg-password', this)">&#x1F441;</button>
+      </div>
+      <button class="btn-primary full-width" onclick="register()">Create Account</button>
+    </div>
+    <p id="auth-message" class="auth-msg"></p>
+  </div>
+
+  <!-- ── ARCH MODAL ─────────────────────────────── -->
+  <div class="modal-overlay" id="arch-overlay" onclick="closeArchModal()"></div>
+  <div class="modal-box arch-modal-box" id="arch-modal">
+    <button class="modal-close" onclick="closeArchModal()">&#x2715;</button>
+    <h2>System Architecture</h2>
+    <div class="arch-grid">
+      <div class="arch-card"><div class="arch-card-icon">&#x1F5C3;</div><div class="arch-card-name">S3</div><div class="arch-card-desc">Hosts frontend files privately</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F30D;</div><div class="arch-card-name">CloudFront</div><div class="arch-card-desc">CDN — 400+ edge locations worldwide</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F50C;</div><div class="arch-card-name">API Gateway</div><div class="arch-card-desc">REST API with JWT auth &amp; rate limiting</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x26A1;</div><div class="arch-card-name">Lambda</div><div class="arch-card-desc">Pay-per-use serverless compute</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F5C4;</div><div class="arch-card-name">DynamoDB</div><div class="arch-card-desc">NoSQL — £0 at idle, auto-scales</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F510;</div><div class="arch-card-name">Cognito</div><div class="arch-card-desc">Auth — JWT tokens, 50K MAU free</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F4EC;</div><div class="arch-card-name">SQS</div><div class="arch-card-desc">Async order processing queue</div></div>
+      <div class="arch-card"><div class="arch-card-icon">&#x1F4E3;</div><div class="arch-card-name">SNS</div><div class="arch-card-desc">Email order confirmations</div></div>
+    </div>
+    <div class="arch-cost-banner">&#x2705; Total infrastructure cost: <strong>&#xA3;0 / month</strong> on AWS Free Tier</div>
+  </div>
+
+  <!-- ── TOAST ──────────────────────────────────── -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ── FOOTER ─────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo-icon">&#x2601;</div>
+        <span>NimbusShop</span>
+      </div>
+      <p class="footer-tagline">Built with AWS Serverless — CloudFormation IaC — SAA-C03 Portfolio Project</p>
+      <div class="footer-flow">
+        <span>User</span><span class="flow-arrow">&#x2192;</span>
+        <span>CloudFront</span><span class="flow-arrow">&#x2192;</span>
+        <span>API Gateway</span><span class="flow-arrow">&#x2192;</span>
+        <span>Lambda</span><span class="flow-arrow">&#x2192;</span>
+        <span>DynamoDB</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
