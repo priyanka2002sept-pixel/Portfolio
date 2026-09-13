@@ -1,4 +1,0 @@
-pytest
-pytest-cov
-moto[dynamodb,sqs,sns]
-boto3
